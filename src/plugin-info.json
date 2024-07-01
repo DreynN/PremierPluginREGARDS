@@ -1,0 +1,24 @@
+{
+  "name": "squelette",
+  "description": "zamn",
+  "version": "1.0.0",
+  "author": "nicolas vongsanti",
+  "company": "tsn",
+  "email": "zamn",
+  "url": "",
+  "license": "GPL-3.0",
+  "type": "SERVICE",
+  "conf": {
+    "applicationModes": [
+      "ONE"
+    ],
+    "entityTypes": [
+      "DATA"
+    ],
+    "static": {
+    },
+    "dynamic": {
+    },
+    "showButtonsBar": false
+  }
+}
