@@ -22,6 +22,10 @@ import { TargetEntitiesResolver } from '@regardsoss/plugins-api'
 import { AuthenticationClient } from '@regardsoss/authentication-utils'
 import { URIContentDisplayer } from '@regardsoss/components'
 import { IFrameURLContentDisplayer } from '@regardsoss/components'
+import { BasicSignalSelectors } from '@regardsoss/store-utils'
+import { DownloadFileClient } from '../clientsfiles/main'
+import { FilePreview } from '../components/FilePreview'
+import withFileClient from './withFileClient'
 
 /**
  * Main squelette plugin container
@@ -34,10 +38,13 @@ export class ServiceContainer extends React.Component {
    * @param {*} props: (optional) current component properties (excepted those from mapStateToProps and mapDispatchToProps)
    * @return {*} list of component properties extracted from redux state
    */
-  static mapStateToProps(state) {
-    const token = AuthenticationClient.authenticationSelectors.getAccessToken(state)
+  static mapStateToProps(state, props) {
+    const { FileClient } = props;
+    const token = AuthenticationClient.authenticationSelectors.getAccessToken(state);
     return {
-      token: token
+      //TODO voir si c'est correct
+      //fileClientRes: FileClient.selectors.getResult(state),
+      token: token,
     }
   }
 
@@ -47,24 +54,36 @@ export class ServiceContainer extends React.Component {
    * @param {*} props: (optional)  current component properties (excepted those from mapStateToProps and mapDispatchToProps)
    * @return {*} list of component properties extracted from redux state
    */
-  static mapDispatchToProps(dispatch, { target }) {
+  static mapDispatchToProps(dispatch, props) {
+    const { FileClient, target } = props;
     return {
+      fetchFile: (searchContext) => dispatch(FileClient.actions.getDownloadFile(searchContext)),
       // we apply partially the method getReducePromise to ignore dispatch reference at runtime
       getReducePromise: (reducer, initialValue) => TargetEntitiesResolver.getReducePromise(dispatch, target, reducer, initialValue),
     }
   }
 
   static propTypes = {
+    // From runtime
     pluginInstanceId: PropTypes.string.isRequired,
     target: AccessShapes.PluginTarget.isRequired,
     configuration: AccessShapes.RuntimeConfiguration.isRequired,
+    // From withFileClient()
+    FileClient: PropTypes.shape({
+      actions: PropTypes.instanceOf(DownloadFileClient.SearchDownloadFileActions),
+      selectors: PropTypes.instanceOf(BasicSignalSelectors),
+    }).isRequired,
     // From mapDispatchToProps
+    fetchFile: PropTypes.func.isRequired,
     getReducePromise: PropTypes.func.isRequired, // partially applied reduce promise, see mapStateToProps and later code demo
     // From mapStateToProps
     token: PropTypes.string,
+    //TODO chercher le type de donnée qui est retourné
+    //fileClientRes: ,
   }
 
   state = {
+    file: null,
     runtimeObjects: [],
   }
 
@@ -72,49 +91,38 @@ export class ServiceContainer extends React.Component {
     // Start fetching and converting entities: append each new entity in array
     // Note: It isn't a good pratice to keep complete entities in memory as it result
     // in heavy memory load (just demonstrated here).
-    const { getReducePromise } = this.props
-
+    const { getReducePromise, fetchFile, token } = this.props;
     getReducePromise((previouslyRetrieved, entity) => [...previouslyRetrieved, entity], [])
-      .then(runtimeObjects => this.setState({ runtimeObjects }))
-      .catch(err => console.error('Could not retrieve service runtime entities', err))
+      .then(runtimeObjects => {
+        //this.setState({ runtimeObjects });
+        let reqParamsObject = {
+          AIP_ID: runtimeObjects[0].content.virtualId,
+          // TODO formulation à changer car il peut y avoir plusieurs fichiers RAWDATA
+          checksum: runtimeObjects[0].content.files.RAWDATA[0].checksum,
+          token: token
+        };
+        console.log('aipid', reqParamsObject.AIP_ID, ' et checksum', reqParamsObject.checksum);
+        fetchFile(reqParamsObject).then((results) => {
+          this.setState({file: results.payload, runtimeObjects: runtimeObjects });
+          console.log('fichier: ', results.payload);
+        })
+        .catch(err => console.error('Could not retrieve get file', err));
+
+      })
+      .catch(err => console.error('Could not retrieve service runtime entities', err));
   }
 
 
   render() {
-    const { runtimeObjects } = this.state
-    const { token } = this.props
+    const { runtimeObjects, file } = this.state;
+    const { token } = this.props;
     return (
       <div>
         Hello Service Plugin
         
         {runtimeObjects.map((object, index) => (
           <div key={index}>
-            <p>Session Owner: {object.content.sessionOwner}</p>
-            <p>Provider ID: {object.content.providerId}</p>
-            <p>Model: {object.content.model}</p>
-            <h2>Services:</h2>
-            {object.content.services.map((service, serviceIndex) => (
-              <p key={serviceIndex}>Service Label: {service.content.label}</p>
-            ))}
-            <img
-              src={`http://10.31.37.11:80/api/v1/rs-catalog/downloads/${object.content.virtualId}/files/8c6b56e6d621b9192f2f162f0f9ac43c?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJyZWdhcmRzbmljb25ld0BnbWFpbC5jb20iLCJhdWQiOlsicnMtYXV0aGVudGljYXRpb24iXSwicm9sZSI6IklOU1RBTkNFX0FETUlOIiwidXNlcl9uYW1lIjoiZnIuY25lcy5yZWdhcmRzLmZyYW1ld29yay5zZWN1cml0eS51dGlscy5qd3QuVXNlckRldGFpbHNANTJkYjQyNzkiLCJzY29wZSI6WyJyZWdhcmRzbmljb25ldyJdLCJleHAiOjE3MjIwODQyMDYsImF1dGhvcml0aWVzIjpbIklOU1RBTkNFX0FETUlOIl0sImp0aSI6IjlYWWNuQzJjOFlPMkdpVEZIY0JSbGZoLWc0YyIsInRlbmFudCI6InJlZ2FyZHNuaWNvbmV3IiwiZW1haWwiOiJyZWdhcmRzbmljb25ld0BnbWFpbC5jb20iLCJjbGllbnRfaWQiOiJjbGllbnQifQ.8HvN1ojPNvCoSAzr4w8caSrMQ82f7edCEQ0KF9ktWB4`}
-            />
-            <p>Token: {token}</p>
-            {Object.values(object.content.files).flat().map((file, index) => (
-              <div key={index}>
-                <h2>File {index + 1}</h2>
-                <p>URI: {file.uri}</p>
-                <p>MIME Type: {file.mimeType}</p>
-              </div>
-            ))}
-            <iframe src='https://cdn.jsdelivr.net/gh/DreynN/pluginsUIRegards@master/nicotest/target/prod/plugin.js'></iframe>
-            {/* <URIContentDisplayer uri='http://10.31.37.11:80/api/v1/rs-catalog/downloads/URN:AIP:DATA:regardsniconew:21da591f-1bf7-3290-8d16-5541d1441377:V1/files/cc26a2a2d48331790247a7f6eadeb0b5' /> */}
-            {/* <LocalURLProvider blob='http://10.31.37.11:80/api/v1/rs-catalog/downloads/URN:AIP:DATA:regardsniconew:a90e9f6b-d7aa-3e61-91ea-d04a49f9394c:V1/files/cff687b80b4d325a5c47a939d2641088?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJyZWdhcmRzbmljb25ld0BnbWFpbC5jb20iLCJhdWQiOlsicnMtYXV0aGVudGljYXRpb24iXSwicm9sZSI6IklOU1RBTkNFX0FETUlOIiwidXNlcl9uYW1lIjoiZnIuY25lcy5yZWdhcmRzLmZyYW1ld29yay5zZWN1cml0eS51dGlscy5qd3QuVXNlckRldGFpbHNAN2QzYjM3NTYiLCJzY29wZSI6WyJyZWdhcmRzbmljb25ldyJdLCJleHAiOjE3MjAzNDAyOTAsImF1dGhvcml0aWVzIjpbIklOU1RBTkNFX0FETUlOIl0sImp0aSI6InFWZWUwRWJzU1lwMUZOa3RXYl9rbG93WkJmQSIsInRlbmFudCI6InJlZ2FyZHNuaWNvbmV3IiwiZW1haWwiOiJyZWdhcmRzbmljb25ld0BnbWFpbC5jb20iLCJjbGllbnRfaWQiOiJjbGllbnQifQ.fD5q686C04JenAgRp1cI1BxpHwLHSG7Y-KFFysUw04I' targetPropertyName="source">
-              <IFrameURLContentDisplayer />
-            </LocalURLProvider> */}
-            {/* <div>uri du fichier: {`${object.content.files.RAWDATA[1].uri}?token=${token}`}
-              <URIContentDisplayer uri={`${object.content.files.RAWDATA[1].uri}?token=${token}`} />
-            </div> */}
+            <FilePreview file={file} />
           </div>
         ))}
       </div>
@@ -123,6 +131,6 @@ export class ServiceContainer extends React.Component {
 }
 
 // export REDUX connected container
-export default connect(
-  ServiceContainer.mapStateToProps,
-  ServiceContainer.mapDispatchToProps)(ServiceContainer)
+export default withFileClient(
+  connect(ServiceContainer.mapStateToProps,ServiceContainer.mapDispatchToProps)(ServiceContainer),
+)

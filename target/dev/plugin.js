@@ -1,6 +1,237 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
+/***/ "./src/clients/FileClient.js":
+/*!***********************************!*\
+  !*** ./src/clients/FileClient.js ***!
+  \***********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getFileClient": () => (/* binding */ getFileClient),
+/* harmony export */   "getFileReducer": () => (/* binding */ getFileReducer)
+/* harmony export */ });
+/* harmony import */ var _clientsfiles_main__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../clientsfiles/main */ "./src/clientsfiles/main.js");
+/* harmony import */ var _regardsoss_plugins_api__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @regardsoss/plugins-api */ "../../../web_modules/utils/plugins-api/src/utils/ClientConfBuilder.js");
+
+
+const pluginName = 'nicotest';
+const storeKey = 'file';
+const actionsBuilder = namespace => new _clientsfiles_main__WEBPACK_IMPORTED_MODULE_0__.DownloadFileClient.SearchDownloadFileActions(namespace);
+const reducerBuilder = namespace => _clientsfiles_main__WEBPACK_IMPORTED_MODULE_0__.DownloadFileClient.getSearchDownloadFileReducer(namespace);
+const selectorsBuilder = storePath => _clientsfiles_main__WEBPACK_IMPORTED_MODULE_0__.DownloadFileClient.getSearchDownloadFileSelectors(storePath);
+const clientInfoBuilder = new _regardsoss_plugins_api__WEBPACK_IMPORTED_MODULE_1__.default(pluginName, storeKey).setActionsBuilder(actionsBuilder).setSelectorsBuilder(selectorsBuilder).setReducerBuilder(reducerBuilder);
+function getFileClient(pluginInstanceId) {
+  return clientInfoBuilder.getClient(pluginInstanceId);
+}
+function getFileReducer(pluginInstanceId) {
+  return clientInfoBuilder.getReducer(pluginInstanceId);
+}
+
+/***/ }),
+
+/***/ "./src/clientsfiles/downloadFileCatalog/SearchDownloadFileActions.js":
+/*!***************************************************************************!*\
+  !*** ./src/clientsfiles/downloadFileCatalog/SearchDownloadFileActions.js ***!
+  \***************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ SearchDownloadFileActions)
+/* harmony export */ });
+/* harmony import */ var _regardsoss_store_utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @regardsoss/store-utils */ "../../../web_modules/utils/store-utils/src/download/DownloadFileActions.js");
+
+class SearchDownloadFileActions extends _regardsoss_store_utils__WEBPACK_IMPORTED_MODULE_0__.default {
+  constructor(namespace, bypassErrorMiddleware = false) {
+    super({
+      namespace,
+      //TODO finir le endpoint trouver les bons noms d'attributs
+      entityEndpoint: `${"http://10.31.37.11"}/${"api/v1"}/${STATIC_CONF.MSERVICES.CATALOG}/downloads/{AIP_ID}/files/{checksum}?token={token}`,
+      bypassErrorMiddleware
+    });
+  }
+  getDownloadFile(searchContext) {
+    return this.download(searchContext, null, 'GET', null);
+  }
+  //TODO voir si la fonction suivante est utile ou non => a priori oui vu que la fonction d'au dessus permet de lancer un download
+  getFileBuildResults(res) {
+    return this.buildResults(res);
+  }
+}
+
+/***/ }),
+
+/***/ "./src/clientsfiles/downloadFileCatalog/SearchDownloadFileReducer.js":
+/*!***************************************************************************!*\
+  !*** ./src/clientsfiles/downloadFileCatalog/SearchDownloadFileReducer.js ***!
+  \***************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ getSearchDownloadFileReducer)
+/* harmony export */ });
+/* harmony import */ var _regardsoss_store_utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @regardsoss/store-utils */ "../../../web_modules/utils/store-utils/src/download/DownloadFileReducers.js");
+/* harmony import */ var _SearchDownloadFileActions__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./SearchDownloadFileActions */ "./src/clientsfiles/downloadFileCatalog/SearchDownloadFileActions.js");
+
+
+function getSearchDownloadFileReducer(namespace) {
+  const instance = new _regardsoss_store_utils__WEBPACK_IMPORTED_MODULE_1__.default(new _SearchDownloadFileActions__WEBPACK_IMPORTED_MODULE_0__.default(namespace));
+  return (state, action) => instance.reduce(state, action);
+}
+
+/***/ }),
+
+/***/ "./src/clientsfiles/downloadFileCatalog/SearchDownloadFileSelectors.js":
+/*!*****************************************************************************!*\
+  !*** ./src/clientsfiles/downloadFileCatalog/SearchDownloadFileSelectors.js ***!
+  \*****************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _regardsoss_store_utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @regardsoss/store-utils */ "../../../web_modules/utils/store-utils/src/download/DownloadFileSelectors.js");
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (storePath => new _regardsoss_store_utils__WEBPACK_IMPORTED_MODULE_0__.default(storePath));
+
+/***/ }),
+
+/***/ "./src/clientsfiles/main.js":
+/*!**********************************!*\
+  !*** ./src/clientsfiles/main.js ***!
+  \**********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "DownloadFileClient": () => (/* binding */ DownloadFileClient)
+/* harmony export */ });
+/* harmony import */ var _downloadFileCatalog_SearchDownloadFileActions__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./downloadFileCatalog/SearchDownloadFileActions */ "./src/clientsfiles/downloadFileCatalog/SearchDownloadFileActions.js");
+/* harmony import */ var _downloadFileCatalog_SearchDownloadFileReducer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./downloadFileCatalog/SearchDownloadFileReducer */ "./src/clientsfiles/downloadFileCatalog/SearchDownloadFileReducer.js");
+/* harmony import */ var _downloadFileCatalog_SearchDownloadFileSelectors__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./downloadFileCatalog/SearchDownloadFileSelectors */ "./src/clientsfiles/downloadFileCatalog/SearchDownloadFileSelectors.js");
+
+
+
+const DownloadFileCl = {
+  SearchDownloadFileActions: _downloadFileCatalog_SearchDownloadFileActions__WEBPACK_IMPORTED_MODULE_0__.default,
+  getSearchDownloadFileReducer: _downloadFileCatalog_SearchDownloadFileReducer__WEBPACK_IMPORTED_MODULE_1__.default,
+  getSearchDownloadFileSelectors: _downloadFileCatalog_SearchDownloadFileSelectors__WEBPACK_IMPORTED_MODULE_2__.default
+};
+const DownloadFileClient = DownloadFileCl;
+
+/***/ }),
+
+/***/ "./src/components/FilePreview.jsx":
+/*!****************************************!*\
+  !*** ./src/components/FilePreview.jsx ***!
+  \****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "FilePreview": () => (/* binding */ FilePreview),
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _regardsoss_display_control__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @regardsoss/display-control */ "../../../web_modules/utils/display-control/src/blob/LocalURLProvider.jsx");
+/* harmony import */ var _IFrameDisplayer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./IFrameDisplayer */ "./src/components/IFrameDisplayer.jsx");
+/* provided dependency */ var React = __webpack_require__(/*! react */ "../../../node_modules/react/index.js");
+/* provided dependency */ var PropTypes = __webpack_require__(/*! prop-types */ "../../../node_modules/prop-types/index.js");
+function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == typeof i ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != typeof i) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+
+
+
+class FilePreview extends React.Component {
+  render() {
+    const {
+      file
+    } = this.props;
+    const {
+      content,
+      contentType
+    } = file;
+    console.log('fichier:', file, ' contenu:', content, ' typedecontenu', contentType);
+    return /*#__PURE__*/React.createElement(_regardsoss_display_control__WEBPACK_IMPORTED_MODULE_1__.default, {
+      blob: content,
+      targetPropertyName: "source"
+    }, /*#__PURE__*/React.createElement(_IFrameDisplayer__WEBPACK_IMPORTED_MODULE_0__.IFrameDisplayer, null));
+  }
+}
+_defineProperty(FilePreview, "propTypes", {
+  file: PropTypes.shape({
+    content: PropTypes.instanceOf(Blob).isRequired,
+    contentType: PropTypes.string.isRequired
+  })
+});
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (FilePreview);
+
+/***/ }),
+
+/***/ "./src/components/IFrameDisplayer.jsx":
+/*!********************************************!*\
+  !*** ./src/components/IFrameDisplayer.jsx ***!
+  \********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "IFrameDisplayer": () => (/* binding */ IFrameDisplayer),
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* provided dependency */ var React = __webpack_require__(/*! react */ "../../../node_modules/react/index.js");
+/* provided dependency */ var PropTypes = __webpack_require__(/*! prop-types */ "../../../node_modules/prop-types/index.js");
+function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == typeof i ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != typeof i) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+/**
+ * Copyright 2017-2023 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ *
+ * This file is part of REGARDS.
+ *
+ * REGARDS is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * REGARDS is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with REGARDS. If not, see <http://www.gnu.org/licenses/>.
+ **/
+
+class IFrameDisplayer extends React.Component {
+  render() {
+    const {
+      source
+    } = this.props;
+    return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("iframe", {
+      title: "content-displayer",
+      src: source
+    }));
+  }
+}
+_defineProperty(IFrameDisplayer, "propTypes", {
+  source: PropTypes.string
+});
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (IFrameDisplayer);
+
+/***/ }),
+
 /***/ "./src/containers/ServiceContainer.jsx":
 /*!*********************************************!*\
   !*** ./src/containers/ServiceContainer.jsx ***!
@@ -13,10 +244,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "ServiceContainer": () => (/* binding */ ServiceContainer),
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _regardsoss_redux__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @regardsoss/redux */ "../../../web_modules/utils/redux/src/Connect.js");
-/* harmony import */ var _regardsoss_shape__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @regardsoss/shape */ "../../../web_modules/data/shape/src/main.js");
-/* harmony import */ var _regardsoss_plugins_api__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @regardsoss/plugins-api */ "../../../web_modules/utils/plugins-api/src/utils/TargetEntitiesResolver.js");
-/* harmony import */ var _regardsoss_authentication_utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @regardsoss/authentication-utils */ "../../../web_modules/utils/authentication-utils/src/AuthenticationClient.js");
+/* harmony import */ var _regardsoss_redux__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @regardsoss/redux */ "../../../web_modules/utils/redux/src/Connect.js");
+/* harmony import */ var _regardsoss_shape__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @regardsoss/shape */ "../../../web_modules/data/shape/src/main.js");
+/* harmony import */ var _regardsoss_plugins_api__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @regardsoss/plugins-api */ "../../../web_modules/utils/plugins-api/src/utils/TargetEntitiesResolver.js");
+/* harmony import */ var _regardsoss_authentication_utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @regardsoss/authentication-utils */ "../../../web_modules/utils/authentication-utils/src/AuthenticationClient.js");
+/* harmony import */ var _regardsoss_store_utils__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @regardsoss/store-utils */ "../../../web_modules/utils/store-utils/src/signal/BasicSignalSelectors.js");
+/* harmony import */ var _clientsfiles_main__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../clientsfiles/main */ "./src/clientsfiles/main.js");
+/* harmony import */ var _components_FilePreview__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/FilePreview */ "./src/components/FilePreview.jsx");
+/* harmony import */ var _withFileClient__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./withFileClient */ "./src/containers/withFileClient.jsx");
 /* provided dependency */ var React = __webpack_require__(/*! react */ "../../../node_modules/react/index.js");
 /* provided dependency */ var PropTypes = __webpack_require__(/*! prop-types */ "../../../node_modules/prop-types/index.js");
 function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
@@ -47,6 +282,10 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
 
 
 
+
+
+
+
 /**
  * Main squelette plugin container
  * @author nicolas vongsanti
@@ -55,6 +294,7 @@ class ServiceContainer extends React.Component {
   constructor(...args) {
     super(...args);
     _defineProperty(this, "state", {
+      file: null,
       runtimeObjects: []
     });
   }
@@ -64,9 +304,14 @@ class ServiceContainer extends React.Component {
    * @param {*} props: (optional) current component properties (excepted those from mapStateToProps and mapDispatchToProps)
    * @return {*} list of component properties extracted from redux state
    */
-  static mapStateToProps(state) {
-    const token = _regardsoss_authentication_utils__WEBPACK_IMPORTED_MODULE_0__.default.authenticationSelectors.getAccessToken(state);
+  static mapStateToProps(state, props) {
+    const {
+      FileClient
+    } = props;
+    const token = _regardsoss_authentication_utils__WEBPACK_IMPORTED_MODULE_3__.default.authenticationSelectors.getAccessToken(state);
     return {
+      //TODO voir si c'est correct
+      //fileClientRes: FileClient.selectors.getResult(state),
       token: token
     };
   }
@@ -77,12 +322,15 @@ class ServiceContainer extends React.Component {
    * @param {*} props: (optional)  current component properties (excepted those from mapStateToProps and mapDispatchToProps)
    * @return {*} list of component properties extracted from redux state
    */
-  static mapDispatchToProps(dispatch, {
-    target
-  }) {
+  static mapDispatchToProps(dispatch, props) {
+    const {
+      FileClient,
+      target
+    } = props;
     return {
+      fetchFile: searchContext => dispatch(FileClient.actions.getDownloadFile(searchContext)),
       // we apply partially the method getReducePromise to ignore dispatch reference at runtime
-      getReducePromise: (reducer, initialValue) => _regardsoss_plugins_api__WEBPACK_IMPORTED_MODULE_1__.TargetEntitiesResolver.getReducePromise(dispatch, target, reducer, initialValue)
+      getReducePromise: (reducer, initialValue) => _regardsoss_plugins_api__WEBPACK_IMPORTED_MODULE_4__.TargetEntitiesResolver.getReducePromise(dispatch, target, reducer, initialValue)
     };
   }
   componentDidMount() {
@@ -90,45 +338,103 @@ class ServiceContainer extends React.Component {
     // Note: It isn't a good pratice to keep complete entities in memory as it result
     // in heavy memory load (just demonstrated here).
     const {
-      getReducePromise
+      getReducePromise,
+      fetchFile,
+      token
     } = this.props;
-    getReducePromise((previouslyRetrieved, entity) => [...previouslyRetrieved, entity], []).then(runtimeObjects => this.setState({
-      runtimeObjects
-    })).catch(err => console.error('Could not retrieve service runtime entities', err));
+    getReducePromise((previouslyRetrieved, entity) => [...previouslyRetrieved, entity], []).then(runtimeObjects => {
+      //this.setState({ runtimeObjects });
+      let reqParamsObject = {
+        AIP_ID: runtimeObjects[0].content.virtualId,
+        // TODO formulation à changer car il peut y avoir plusieurs fichiers RAWDATA
+        checksum: runtimeObjects[0].content.files.RAWDATA[0].checksum,
+        token: token
+      };
+      console.log('aipid', reqParamsObject.AIP_ID, ' et checksum', reqParamsObject.checksum);
+      fetchFile(reqParamsObject).then(results => {
+        this.setState({
+          file: results.payload,
+          runtimeObjects: runtimeObjects
+        });
+        console.log('fichier: ', results.payload);
+      }).catch(err => console.error('Could not retrieve get file', err));
+    }).catch(err => console.error('Could not retrieve service runtime entities', err));
   }
   render() {
     const {
-      runtimeObjects
+      runtimeObjects,
+      file
     } = this.state;
     const {
       token
     } = this.props;
     return /*#__PURE__*/React.createElement("div", null, "Hello Service Plugin", runtimeObjects.map((object, index) => /*#__PURE__*/React.createElement("div", {
       key: index
-    }, /*#__PURE__*/React.createElement("p", null, "Session Owner: ", object.content.sessionOwner), /*#__PURE__*/React.createElement("p", null, "Provider ID: ", object.content.providerId), /*#__PURE__*/React.createElement("p", null, "Model: ", object.content.model), /*#__PURE__*/React.createElement("h2", null, "Services:"), object.content.services.map((service, serviceIndex) => /*#__PURE__*/React.createElement("p", {
-      key: serviceIndex
-    }, "Service Label: ", service.content.label)), /*#__PURE__*/React.createElement("img", {
-      src: `http://10.31.37.11:80/api/v1/rs-catalog/downloads/${object.content.virtualId}/files/8c6b56e6d621b9192f2f162f0f9ac43c?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJyZWdhcmRzbmljb25ld0BnbWFpbC5jb20iLCJhdWQiOlsicnMtYXV0aGVudGljYXRpb24iXSwicm9sZSI6IklOU1RBTkNFX0FETUlOIiwidXNlcl9uYW1lIjoiZnIuY25lcy5yZWdhcmRzLmZyYW1ld29yay5zZWN1cml0eS51dGlscy5qd3QuVXNlckRldGFpbHNANTJkYjQyNzkiLCJzY29wZSI6WyJyZWdhcmRzbmljb25ldyJdLCJleHAiOjE3MjIwODQyMDYsImF1dGhvcml0aWVzIjpbIklOU1RBTkNFX0FETUlOIl0sImp0aSI6IjlYWWNuQzJjOFlPMkdpVEZIY0JSbGZoLWc0YyIsInRlbmFudCI6InJlZ2FyZHNuaWNvbmV3IiwiZW1haWwiOiJyZWdhcmRzbmljb25ld0BnbWFpbC5jb20iLCJjbGllbnRfaWQiOiJjbGllbnQifQ.8HvN1ojPNvCoSAzr4w8caSrMQ82f7edCEQ0KF9ktWB4`
-    }), /*#__PURE__*/React.createElement("p", null, "Token: ", token), Object.values(object.content.files).flat().map((file, index) => /*#__PURE__*/React.createElement("div", {
-      key: index
-    }, /*#__PURE__*/React.createElement("h2", null, "File ", index + 1), /*#__PURE__*/React.createElement("p", null, "URI: ", file.uri), /*#__PURE__*/React.createElement("p", null, "MIME Type: ", file.mimeType))), /*#__PURE__*/React.createElement("iframe", {
-      src: "https://cdn.jsdelivr.net/gh/DreynN/pluginsUIRegards@master/nicotest/target/prod/plugin.js"
+    }, /*#__PURE__*/React.createElement(_components_FilePreview__WEBPACK_IMPORTED_MODULE_1__.FilePreview, {
+      file: file
     }))));
   }
 }
 
 // export REDUX connected container
 _defineProperty(ServiceContainer, "propTypes", {
+  // From runtime
   pluginInstanceId: PropTypes.string.isRequired,
-  target: _regardsoss_shape__WEBPACK_IMPORTED_MODULE_2__.AccessShapes.PluginTarget.isRequired,
-  configuration: _regardsoss_shape__WEBPACK_IMPORTED_MODULE_2__.AccessShapes.RuntimeConfiguration.isRequired,
+  target: _regardsoss_shape__WEBPACK_IMPORTED_MODULE_5__.AccessShapes.PluginTarget.isRequired,
+  configuration: _regardsoss_shape__WEBPACK_IMPORTED_MODULE_5__.AccessShapes.RuntimeConfiguration.isRequired,
+  // From withFileClient()
+  FileClient: PropTypes.shape({
+    actions: PropTypes.instanceOf(_clientsfiles_main__WEBPACK_IMPORTED_MODULE_0__.DownloadFileClient.SearchDownloadFileActions),
+    selectors: PropTypes.instanceOf(_regardsoss_store_utils__WEBPACK_IMPORTED_MODULE_6__.default)
+  }).isRequired,
   // From mapDispatchToProps
+  fetchFile: PropTypes.func.isRequired,
   getReducePromise: PropTypes.func.isRequired,
   // partially applied reduce promise, see mapStateToProps and later code demo
   // From mapStateToProps
   token: PropTypes.string
+  //TODO chercher le type de donnée qui est retourné
+  //fileClientRes: ,
 });
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,_regardsoss_redux__WEBPACK_IMPORTED_MODULE_3__.default)(ServiceContainer.mapStateToProps, ServiceContainer.mapDispatchToProps)(ServiceContainer));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,_withFileClient__WEBPACK_IMPORTED_MODULE_2__.default)((0,_regardsoss_redux__WEBPACK_IMPORTED_MODULE_7__.default)(ServiceContainer.mapStateToProps, ServiceContainer.mapDispatchToProps)(ServiceContainer)));
+
+/***/ }),
+
+/***/ "./src/containers/withFileClient.jsx":
+/*!*******************************************!*\
+  !*** ./src/containers/withFileClient.jsx ***!
+  \*******************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _clients_FileClient__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../clients/FileClient */ "./src/clients/FileClient.js");
+/* provided dependency */ var React = __webpack_require__(/*! react */ "../../../node_modules/react/index.js");
+/* provided dependency */ var PropTypes = __webpack_require__(/*! prop-types */ "../../../node_modules/prop-types/index.js");
+function _extends() { return _extends = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } return n; }, _extends.apply(null, arguments); }
+function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == typeof i ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != typeof i) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Component => {
+  var _WithClient;
+  return _WithClient = class WithClient extends React.Component {
+    render() {
+      const {
+        pluginInstanceId
+      } = this.props;
+      const FileClient = (0,_clients_FileClient__WEBPACK_IMPORTED_MODULE_0__.getFileClient)(pluginInstanceId);
+      return /*#__PURE__*/React.createElement(Component, _extends({}, this.props, {
+        FileClient: FileClient
+      }));
+    }
+  }, _defineProperty(_WithClient, "propTypes", {
+    pluginInstanceId: PropTypes.string.isRequired
+  }), _WithClient;
+});
 
 /***/ }),
 
@@ -51790,6 +52096,283 @@ const {
 
 /***/ }),
 
+/***/ "../../../web_modules/utils/display-control/src/blob/LocalURLProvider.jsx":
+/*!********************************************************************************!*\
+  !*** ../../../web_modules/utils/display-control/src/blob/LocalURLProvider.jsx ***!
+  \********************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var window_or_global__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! window-or-global */ "../../../node_modules/window-or-global/lib/index.js");
+/* harmony import */ var window_or_global__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(window_or_global__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var lodash_isEqual__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! lodash/isEqual */ "../../../node_modules/lodash/isEqual.js");
+/* harmony import */ var lodash_isEqual__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(lodash_isEqual__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _hoc_HOCUtils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../hoc/HOCUtils */ "../../../web_modules/utils/display-control/src/hoc/HOCUtils.jsx");
+/* provided dependency */ var React = __webpack_require__(/*! react */ "../../../node_modules/react/index.js");
+/* provided dependency */ var PropTypes = __webpack_require__(/*! prop-types */ "../../../node_modules/prop-types/index.js");
+function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == typeof i ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != typeof i) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+/**
+ * Copyright 2017-2023 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ *
+ * This file is part of REGARDS.
+ *
+ * REGARDS is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * REGARDS is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with REGARDS. If not, see <http://www.gnu.org/licenses/>.
+ **/
+
+
+
+
+/**
+ * Given a file content as blob, provides to children a reference to that file as URL and ensures cleaning it.
+ * Children receive the property as {[targetPropertyName]: string} (default targetPropertyName is 'url').
+ * @author Raphaël Mechali
+ */
+class LocalURLProvider extends React.Component {
+  constructor(...args) {
+    super(...args);
+    _defineProperty(this, "state", {
+      localAccessURL: null,
+      children: null
+    });
+    /**
+     * Lifecycle method: component will mount. Used here to detect first properties change and create local URL reference
+     */
+    _defineProperty(this, "UNSAFE_componentWillMount", () => this.onPropertiesUpdated({}, this.props));
+    /**
+     * Lifecycle method: component receive props. Used here to detect properties change and update local URL reference
+     * @param {*} nextProps next component properties
+     */
+    _defineProperty(this, "UNSAFE_componentWillReceiveProps", nextProps => this.onPropertiesUpdated(this.props, nextProps));
+    /**
+     * Lifecycle method: component receive props. Used to delete local URL reference
+     * @param {*} nextProps next component properties
+     */
+    _defineProperty(this, "componentWillUnmount", () => {
+      // make sure leaving no local access file
+      if (this.state.localAccessURL) {
+        window_or_global__WEBPACK_IMPORTED_MODULE_0___default().URL.revokeObjectURL(this.state.localAccessURL);
+      }
+    });
+    /**
+     * Properties change detected: update local state
+     * @param oldProps previous component properties
+     * @param newProps next component properties
+     */
+    _defineProperty(this, "onPropertiesUpdated", (oldProps, newProps) => {
+      const {
+        blob: oldBlob,
+        children: oldChildren,
+        targetPropertyName: oldPropName,
+        ...oldOtherProperties
+      } = oldProps;
+      const {
+        blob,
+        children,
+        targetPropertyName,
+        ...otherProperties
+      } = newProps;
+      if (oldBlob !== blob) {
+        // 1 - Revoke old URL if there was one
+        if (this.state.localAccessURL) {
+          window_or_global__WEBPACK_IMPORTED_MODULE_0___default().URL.revokeObjectURL(this.state.localAccessURL);
+        }
+        // 2 - Use new URL if there is a new file content, clear old one in any case
+        this.storeChildrenWithURL(blob ? LocalURLProvider.buildLocalAccessURL(blob) : null, targetPropertyName, children, otherProperties);
+      } else if (oldPropName !== targetPropertyName || oldChildren !== children || !lodash_isEqual__WEBPACK_IMPORTED_MODULE_1___default()(oldOtherProperties, otherProperties)) {
+        this.storeChildrenWithURL(this.state.localAccessURL, targetPropertyName, children, otherProperties);
+      }
+    });
+    /**
+     * Stores children in state with URL
+     * @param {string} localAccessURL localAccessURL
+     * @param {string} targetPropertyName name of the property to set in children
+     * @param {* | [*]} children
+     * @param {*} otherProperties other properties to be reported to children
+     */
+    _defineProperty(this, "storeChildrenWithURL", (localAccessURL, targetPropertyName, children, otherProperties) => {
+      this.setState({
+        localAccessURL,
+        children: _hoc_HOCUtils__WEBPACK_IMPORTED_MODULE_2__.default.cloneChildrenWith(children, {
+          [targetPropertyName]: localAccessURL,
+          ...otherProperties
+        })
+      });
+    });
+  }
+  /**
+   * Creates local access URL for blob as parameter
+   * @param {*} blob blob
+   * @return {string} blob local URL
+   */
+  static buildLocalAccessURL(blob) {
+    return window_or_global__WEBPACK_IMPORTED_MODULE_0___default().URL.createObjectURL(blob);
+  }
+  render() {
+    const {
+      children
+    } = this.state;
+    return _hoc_HOCUtils__WEBPACK_IMPORTED_MODULE_2__.default.renderChildren(children);
+  }
+}
+_defineProperty(LocalURLProvider, "propTypes", {
+  /** File content as blob to address */
+  // eslint-disable-next-line react/no-unused-prop-types
+  blob: PropTypes.instanceOf(Blob).isRequired,
+  /** Name of the property to add into children */
+  // eslint-disable-next-line react/no-unused-prop-types
+  targetPropertyName: PropTypes.string,
+  // eslint-disable-next-line react/no-unused-prop-types
+  children: PropTypes.oneOfType([PropTypes.node, PropTypes.arrayOf(PropTypes.node)])
+  // other properties should be reported to children
+});
+_defineProperty(LocalURLProvider, "defaultProps", {
+  targetPropertyName: 'url'
+});
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (LocalURLProvider);
+
+/***/ }),
+
+/***/ "../../../web_modules/utils/display-control/src/hoc/HOCUtils.jsx":
+/*!***********************************************************************!*\
+  !*** ../../../web_modules/utils/display-control/src/hoc/HOCUtils.jsx ***!
+  \***********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var lodash_isArray__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! lodash/isArray */ "../../../node_modules/lodash/isArray.js");
+/* harmony import */ var lodash_isArray__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(lodash_isArray__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var lodash_isEqual__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! lodash/isEqual */ "../../../node_modules/lodash/isEqual.js");
+/* harmony import */ var lodash_isEqual__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(lodash_isEqual__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var lodash_isNil__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! lodash/isNil */ "../../../node_modules/lodash/isNil.js");
+/* harmony import */ var lodash_isNil__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(lodash_isNil__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var lodash_omit__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! lodash/omit */ "../../../node_modules/lodash/omit.js");
+/* harmony import */ var lodash_omit__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(lodash_omit__WEBPACK_IMPORTED_MODULE_3__);
+/* provided dependency */ var React = __webpack_require__(/*! react */ "../../../node_modules/react/index.js");
+/**
+ * Copyright 2017-2023 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ *
+ * This file is part of REGARDS.
+ *
+ * REGARDS is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * REGARDS is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with REGARDS. If not, see <http://www.gnu.org/licenses/>.
+ **/
+
+
+
+
+
+/**
+ * Tools for HOC (containers) to work with children (cloning, rendering...)
+ * @author Raphaël Mechali
+ */
+
+/**
+ * Computes if children should be cloned again, taking in account the reported properties
+ * @param {*} oldProps old HOC properties
+ * @param {*} newProps new HOC properties
+ * @param {[string]} nonReportedPropsKeys list of property keys that the container will not report to children
+ * @return true if children should be cloned again
+ */
+function shouldCloneChildren(oldProps, newProps, nonReportedPropsKeys) {
+  const oldReportedProps = lodash_omit__WEBPACK_IMPORTED_MODULE_3___default()(oldProps, nonReportedPropsKeys);
+  const newReportedProps = lodash_omit__WEBPACK_IMPORTED_MODULE_3___default()(newProps, nonReportedPropsKeys);
+  return !lodash_isEqual__WEBPACK_IMPORTED_MODULE_1___default()(oldReportedProps, newReportedProps) || oldProps.children !== newProps.children;
+}
+
+/**
+ * Is child as parameter valid? Workaround for react bug, see FileContentReader.jsx
+ * @param {*} child to test
+ * @return {boolean} true when child is valid
+ */
+function isValidChild(child) {
+  return child && !!child.type;
+}
+
+/**
+ * Clones the list of children as parameter using the new props defined
+ * @param children children as: undefined, single child or children list
+ * @param newProps new children properties as undefined or new object (will be merged with current element properties)
+ * @return [React.element] clone children list
+ */
+function cloneChildrenWith(children = [], newProps = {}) {
+  if (lodash_isNil__WEBPACK_IMPORTED_MODULE_2___default()(children)) {
+    return children;
+  }
+
+  // XXX-Woraround here: react sometimes sends children with undefined type: make sure they won't be cloned
+  if (lodash_isArray__WEBPACK_IMPORTED_MODULE_0___default()(children)) {
+    return children.filter(isValidChild).map(child => React.cloneElement(child, {
+      ...child.props,
+      ...newProps
+    }));
+  }
+  return isValidChild(children) ? React.cloneElement(children, {
+    ...children.props,
+    ...newProps
+  }) : null;
+}
+
+/**
+ * Render method for HOC rendering only their children
+ * @param {*} children  children list
+ * @return {*} rendered children
+ */
+function renderChildren(children) {
+  if (!children) {
+    return null;
+  }
+  if (lodash_isArray__WEBPACK_IMPORTED_MODULE_0___default()(children)) {
+    const validChildren = children.filter(isValidChild);
+    switch (validChildren.length) {
+      case 0:
+        return null;
+      case 1:
+        return validChildren[0];
+      default:
+        return validChildren;
+    }
+  }
+  return isValidChild(children) ? children : null;
+}
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  shouldCloneChildren,
+  cloneChildrenWith,
+  renderChildren
+});
+
+/***/ }),
+
 /***/ "../../../web_modules/utils/i18n/src/model/I18nSelectors.js":
 /*!******************************************************************!*\
   !*** ../../../web_modules/utils/i18n/src/model/I18nSelectors.js ***!
@@ -52327,6 +52910,138 @@ const messages = {
   'criterion.attribute.tooltip.valueable.without.bound': '{typeText}: Valeur indéfinie dans les résultats actuels'
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (messages);
+
+/***/ }),
+
+/***/ "../../../web_modules/utils/plugins-api/src/utils/ClientConfBuilder.js":
+/*!*****************************************************************************!*\
+  !*** ../../../web_modules/utils/plugins-api/src/utils/ClientConfBuilder.js ***!
+  \*****************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ ClientConfBuilder)
+/* harmony export */ });
+/*
+ * Copyright 2017-2023 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ *
+ * This file is part of REGARDS.
+ *
+ * REGARDS is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * REGARDS is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with REGARDS. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/**
+ * Redux client builder for plugins
+ * As plugin receive their pluginInstanceId on runtime, the namespace
+ * of these actions are also build on runtime. This ensures each action
+ * will be reduced by only one reducer, yours.
+ * @author Léo Mieulet
+ */
+class ClientConfBuilder {
+  /**
+   * Redux client builder constructor
+   * @param {string} pluginName plugin name to use on store path and namespace. Must be the same as in plugin-info.json
+   * @param {string} storeKey this reducer store key, used by selector
+   */
+  constructor(pluginName, storeKey) {
+    this.pluginName = pluginName;
+    this.storeKey = storeKey;
+  }
+
+  /**
+   * Save the Action build function
+   */
+  setActionsBuilder(actionsBuilder) {
+    this.actionsBuilder = actionsBuilder;
+    return this;
+  }
+
+  /**
+   * Save the Selector build function
+   */
+  setSelectorsBuilder(selectorsBuilder) {
+    this.selectorsBuilder = selectorsBuilder;
+    return this;
+  }
+
+  /**
+   * Save the Reducer build function
+   */
+  setReducerBuilder(reducerBuilder) {
+    this.reducerBuilder = reducerBuilder;
+    return this;
+  }
+
+  /**
+   * @param {*} pluginInstanceId runtime plugin id
+   * @returns the client to wire on container
+   */
+  getClient(pluginInstanceId) {
+    return {
+      actions: this.getActions(pluginInstanceId),
+      selectors: this.getSelectors(pluginInstanceId)
+    };
+  }
+
+  /**
+   * Build a new reducer instance using pluginInstanceId
+   * @param {*} pluginInstanceId runtime plugin id
+   * @returns the reducer to wire on plugin reducer
+   */
+  getReducer(pluginInstanceId) {
+    const namespace = this.getNamespace(pluginInstanceId);
+    return this.reducerBuilder(namespace);
+  }
+
+  /**
+   * Build an new Actions instance using pluginInstanceId
+   * @param {*} pluginInstanceId runtime plugin id
+   * @returns the reducer to wire on plugin reducer
+   */
+  getActions(pluginInstanceId) {
+    const namespace = this.getNamespace(pluginInstanceId);
+    return this.actionsBuilder(namespace);
+  }
+
+  /**
+   * Build a new Selectors instance using pluginInstanceId
+   * @param {*} pluginInstanceId runtime plugin id
+   * @returns the selector to select inside redux state
+   */
+  getSelectors(pluginInstanceId) {
+    const storePath = this.getStorePath(pluginInstanceId);
+    return this.selectorsBuilder(storePath);
+  }
+
+  /**
+   * Get the namespace used by actions and reducer
+   * @param {String} pluginInstanceId runtime plugin id
+   */
+  getNamespace(pluginInstanceId) {
+    return `${this.pluginName}/requests/${pluginInstanceId}`;
+  }
+
+  /**
+   * Get the store path used by selectors
+   * @param {String} pluginInstanceId runtime plugin id
+   */
+  getStorePath(pluginInstanceId) {
+    return [`plugins.${this.pluginName}.${pluginInstanceId}`, this.storeKey];
+  }
+}
 
 /***/ }),
 
@@ -53517,6 +54232,118 @@ class DownloadFileActions extends _signal_BasicSignalActions__WEBPACK_IMPORTED_M
   }
 }
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (DownloadFileActions);
+
+/***/ }),
+
+/***/ "../../../web_modules/utils/store-utils/src/download/DownloadFileReducers.js":
+/*!***********************************************************************************!*\
+  !*** ../../../web_modules/utils/store-utils/src/download/DownloadFileReducers.js ***!
+  \***********************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _signal_BasicSignalReducers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../signal/BasicSignalReducers */ "../../../web_modules/utils/store-utils/src/signal/BasicSignalReducers.js");
+function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == typeof i ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != typeof i) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+/**
+ * Copyright 2017-2023 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ *
+ * This file is part of REGARDS.
+ *
+ * REGARDS is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * REGARDS is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with REGARDS. If not, see <http://www.gnu.org/licenses/>.
+**/
+
+
+/**
+ * Reducers for file download actions.
+ * @author Raphaël Mechali
+ */
+class DownloadFileReducers extends _signal_BasicSignalReducers__WEBPACK_IMPORTED_MODULE_0__.default {
+  /**
+   * Constructor
+   * @param {*} downloadFileActions actions instance
+   */
+  constructor(downloadFileActions) {
+    super(downloadFileActions, null);
+  }
+}
+_defineProperty(DownloadFileReducers, "DEFAULT_STATE", {
+  isFetching: false,
+  error: {
+    hasError: false,
+    type: '',
+    message: '',
+    status: 200
+  },
+  file: null
+});
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (DownloadFileReducers);
+
+/***/ }),
+
+/***/ "../../../web_modules/utils/store-utils/src/download/DownloadFileSelectors.js":
+/*!************************************************************************************!*\
+  !*** ../../../web_modules/utils/store-utils/src/download/DownloadFileSelectors.js ***!
+  \************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _signal_BasicSignalSelectors__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../signal/BasicSignalSelectors */ "../../../web_modules/utils/store-utils/src/signal/BasicSignalSelectors.js");
+/**
+ * Copyright 2017-2023 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
+ *
+ * This file is part of REGARDS.
+ *
+ * REGARDS is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * REGARDS is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with REGARDS. If not, see <http://www.gnu.org/licenses/>.
+ **/
+
+
+/**
+ * Download file selectors
+ * @author Raphaël Mechali
+ */
+class DownloadFileSelectors extends _signal_BasicSignalSelectors__WEBPACK_IMPORTED_MODULE_0__.default {
+  /**
+   * Returns fetched file
+   * @param state redux store
+   * @return fetched file like { content: Blob (file content), contentType: string (MIME type) }
+   */
+  getFile(state) {
+    return this.getResult(state);
+  }
+}
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (DownloadFileSelectors);
 
 /***/ }),
 
@@ -59386,6 +60213,36 @@ module.exports = baseUnary;
 
 /***/ }),
 
+/***/ "../../../node_modules/lodash/_baseUnset.js":
+/*!**************************************************!*\
+  !*** ../../../node_modules/lodash/_baseUnset.js ***!
+  \**************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+var castPath = __webpack_require__(/*! ./_castPath */ "../../../node_modules/lodash/_castPath.js"),
+    last = __webpack_require__(/*! ./last */ "../../../node_modules/lodash/last.js"),
+    parent = __webpack_require__(/*! ./_parent */ "../../../node_modules/lodash/_parent.js"),
+    toKey = __webpack_require__(/*! ./_toKey */ "../../../node_modules/lodash/_toKey.js");
+
+/**
+ * The base implementation of `_.unset`.
+ *
+ * @private
+ * @param {Object} object The object to modify.
+ * @param {Array|string} path The property path to unset.
+ * @returns {boolean} Returns `true` if the property is deleted, else `false`.
+ */
+function baseUnset(object, path) {
+  path = castPath(path, object);
+  object = parent(object, path);
+  return object == null || delete object[toKey(last(path))];
+}
+
+module.exports = baseUnset;
+
+
+/***/ }),
+
 /***/ "../../../node_modules/lodash/_baseValues.js":
 /*!***************************************************!*\
   !*** ../../../node_modules/lodash/_baseValues.js ***!
@@ -60820,6 +61677,32 @@ function createWrap(func, bitmask, thisArg, partials, holders, argPos, ary, arit
 }
 
 module.exports = createWrap;
+
+
+/***/ }),
+
+/***/ "../../../node_modules/lodash/_customOmitClone.js":
+/*!********************************************************!*\
+  !*** ../../../node_modules/lodash/_customOmitClone.js ***!
+  \********************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+var isPlainObject = __webpack_require__(/*! ./isPlainObject */ "../../../node_modules/lodash/isPlainObject.js");
+
+/**
+ * Used by `_.omit` to customize its `_.cloneDeep` use to only clone plain
+ * objects.
+ *
+ * @private
+ * @param {*} value The value to inspect.
+ * @param {string} key The key of the property to inspect.
+ * @returns {*} Returns the uncloned value or `undefined` to defer cloning to `_.cloneDeep`.
+ */
+function customOmitClone(value) {
+  return isPlainObject(value) ? undefined : value;
+}
+
+module.exports = customOmitClone;
 
 
 /***/ }),
@@ -63128,6 +64011,32 @@ function overRest(func, start, transform) {
 }
 
 module.exports = overRest;
+
+
+/***/ }),
+
+/***/ "../../../node_modules/lodash/_parent.js":
+/*!***********************************************!*\
+  !*** ../../../node_modules/lodash/_parent.js ***!
+  \***********************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+var baseGet = __webpack_require__(/*! ./_baseGet */ "../../../node_modules/lodash/_baseGet.js"),
+    baseSlice = __webpack_require__(/*! ./_baseSlice */ "../../../node_modules/lodash/_baseSlice.js");
+
+/**
+ * Gets the parent value at `path` of `object`.
+ *
+ * @private
+ * @param {Object} object The object to query.
+ * @param {Array} path The path to get the parent value of.
+ * @returns {*} Returns the parent value.
+ */
+function parent(object, path) {
+  return path.length < 2 ? object : baseGet(object, baseSlice(path, 0, -1));
+}
+
+module.exports = parent;
 
 
 /***/ }),
@@ -67411,6 +68320,36 @@ module.exports = keysIn;
 
 /***/ }),
 
+/***/ "../../../node_modules/lodash/last.js":
+/*!********************************************!*\
+  !*** ../../../node_modules/lodash/last.js ***!
+  \********************************************/
+/***/ ((module) => {
+
+/**
+ * Gets the last element of `array`.
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Array
+ * @param {Array} array The array to query.
+ * @returns {*} Returns the last element of `array`.
+ * @example
+ *
+ * _.last([1, 2, 3]);
+ * // => 3
+ */
+function last(array) {
+  var length = array == null ? 0 : array.length;
+  return length ? array[length - 1] : undefined;
+}
+
+module.exports = last;
+
+
+/***/ }),
+
 /***/ "../../../node_modules/lodash/map.js":
 /*!*******************************************!*\
   !*** ../../../node_modules/lodash/map.js ***!
@@ -67630,6 +68569,73 @@ function noop() {
 }
 
 module.exports = noop;
+
+
+/***/ }),
+
+/***/ "../../../node_modules/lodash/omit.js":
+/*!********************************************!*\
+  !*** ../../../node_modules/lodash/omit.js ***!
+  \********************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+var arrayMap = __webpack_require__(/*! ./_arrayMap */ "../../../node_modules/lodash/_arrayMap.js"),
+    baseClone = __webpack_require__(/*! ./_baseClone */ "../../../node_modules/lodash/_baseClone.js"),
+    baseUnset = __webpack_require__(/*! ./_baseUnset */ "../../../node_modules/lodash/_baseUnset.js"),
+    castPath = __webpack_require__(/*! ./_castPath */ "../../../node_modules/lodash/_castPath.js"),
+    copyObject = __webpack_require__(/*! ./_copyObject */ "../../../node_modules/lodash/_copyObject.js"),
+    customOmitClone = __webpack_require__(/*! ./_customOmitClone */ "../../../node_modules/lodash/_customOmitClone.js"),
+    flatRest = __webpack_require__(/*! ./_flatRest */ "../../../node_modules/lodash/_flatRest.js"),
+    getAllKeysIn = __webpack_require__(/*! ./_getAllKeysIn */ "../../../node_modules/lodash/_getAllKeysIn.js");
+
+/** Used to compose bitmasks for cloning. */
+var CLONE_DEEP_FLAG = 1,
+    CLONE_FLAT_FLAG = 2,
+    CLONE_SYMBOLS_FLAG = 4;
+
+/**
+ * The opposite of `_.pick`; this method creates an object composed of the
+ * own and inherited enumerable property paths of `object` that are not omitted.
+ *
+ * **Note:** This method is considerably slower than `_.pick`.
+ *
+ * @static
+ * @since 0.1.0
+ * @memberOf _
+ * @category Object
+ * @param {Object} object The source object.
+ * @param {...(string|string[])} [paths] The property paths to omit.
+ * @returns {Object} Returns the new object.
+ * @example
+ *
+ * var object = { 'a': 1, 'b': '2', 'c': 3 };
+ *
+ * _.omit(object, ['a', 'c']);
+ * // => { 'b': '2' }
+ */
+var omit = flatRest(function(object, paths) {
+  var result = {};
+  if (object == null) {
+    return result;
+  }
+  var isDeep = false;
+  paths = arrayMap(paths, function(path) {
+    path = castPath(path, object);
+    isDeep || (isDeep = path.length > 1);
+    return path;
+  });
+  copyObject(object, getAllKeysIn(object), result);
+  if (isDeep) {
+    result = baseClone(result, CLONE_DEEP_FLAG | CLONE_FLAT_FLAG | CLONE_SYMBOLS_FLAG, customOmitClone);
+  }
+  var length = paths.length;
+  while (length--) {
+    baseUnset(result, paths[length]);
+  }
+  return result;
+});
+
+module.exports = omit;
 
 
 /***/ }),
