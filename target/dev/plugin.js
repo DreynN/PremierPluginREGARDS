@@ -142,8 +142,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "FilePreview": () => (/* binding */ FilePreview),
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _regardsoss_display_control__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @regardsoss/display-control */ "../../../web_modules/utils/display-control/src/blob/LocalURLProvider.jsx");
+/* harmony import */ var _regardsoss_display_control__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @regardsoss/display-control */ "../../../web_modules/utils/display-control/src/blob/LocalURLProvider.jsx");
+/* harmony import */ var _regardsoss_redux__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @regardsoss/redux */ "../../../web_modules/utils/redux/src/Connect.js");
+/* harmony import */ var _regardsoss_store_utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @regardsoss/store-utils */ "../../../web_modules/utils/store-utils/src/signal/BasicSignalSelectors.js");
 /* harmony import */ var _IFrameDisplayer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./IFrameDisplayer */ "./src/components/IFrameDisplayer.jsx");
+/* harmony import */ var _clientsfiles_main__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../clientsfiles/main */ "./src/clientsfiles/main.js");
+/* harmony import */ var _containers_withFileClient__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../containers/withFileClient */ "./src/containers/withFileClient.jsx");
 /* provided dependency */ var React = __webpack_require__(/*! react */ "../../../node_modules/react/index.js");
 /* provided dependency */ var PropTypes = __webpack_require__(/*! prop-types */ "../../../node_modules/prop-types/index.js");
 function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
@@ -152,29 +156,75 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
 
 
 
+
+
+
 class FilePreview extends React.Component {
+  constructor(...args) {
+    super(...args);
+    _defineProperty(this, "state", {
+      file: null,
+      fileLoading: true
+    });
+  }
+  static mapDispatchToProps(dispatch, props) {
+    const {
+      FileClient
+    } = props;
+    return {
+      fetchFile: searchContext => dispatch(FileClient.actions.getDownloadFile(searchContext))
+    };
+  }
+  componentDidMount() {
+    const {
+      filePathParams,
+      fetchFile
+    } = this.props;
+    this.setState({
+      file: null,
+      fileLoading: true
+    });
+    fetchFile(filePathParams).then(results => {
+      this.setState({
+        file: results.payload,
+        fileLoading: false
+      });
+      console.log('fichier: ', results.payload);
+    }).catch(err => console.error('Could not retrieve get file', err));
+  }
   render() {
     const {
-      file
-    } = this.props;
-    const {
-      content,
-      contentType
-    } = file;
-    console.log('fichier:', file, ' contenu:', content, ' typedecontenu', contentType);
-    return /*#__PURE__*/React.createElement(_regardsoss_display_control__WEBPACK_IMPORTED_MODULE_1__.default, {
-      blob: content,
-      targetPropertyName: "source"
-    }, /*#__PURE__*/React.createElement(_IFrameDisplayer__WEBPACK_IMPORTED_MODULE_0__.IFrameDisplayer, null));
+      fileLoading
+    } = this.state;
+    if (!fileLoading) {
+      const {
+        file
+      } = this.state;
+      const {
+        content
+      } = file;
+      return /*#__PURE__*/React.createElement(_regardsoss_display_control__WEBPACK_IMPORTED_MODULE_3__.default, {
+        blob: content,
+        targetPropertyName: "source"
+      }, /*#__PURE__*/React.createElement(_IFrameDisplayer__WEBPACK_IMPORTED_MODULE_0__.IFrameDisplayer, null));
+    }
+    return /*#__PURE__*/React.createElement("div", null, "fichier en attente de chargement");
   }
 }
+
+// export REDUX connected container
 _defineProperty(FilePreview, "propTypes", {
-  file: PropTypes.shape({
-    content: PropTypes.instanceOf(Blob).isRequired,
-    contentType: PropTypes.string.isRequired
-  })
+  // From ServiceContainer.jsx
+  filePathParams: PropTypes.object,
+  // From withFileClient()
+  FileClient: PropTypes.shape({
+    actions: PropTypes.instanceOf(_clientsfiles_main__WEBPACK_IMPORTED_MODULE_1__.DownloadFileClient.SearchDownloadFileActions),
+    selectors: PropTypes.instanceOf(_regardsoss_store_utils__WEBPACK_IMPORTED_MODULE_4__.default)
+  }).isRequired,
+  // From mapDispatchToProps
+  fetchFile: PropTypes.func.isRequired
 });
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (FilePreview);
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,_containers_withFileClient__WEBPACK_IMPORTED_MODULE_2__.default)((0,_regardsoss_redux__WEBPACK_IMPORTED_MODULE_5__.default)(null, FilePreview.mapDispatchToProps)(FilePreview)));
 
 /***/ }),
 
@@ -195,31 +245,21 @@ __webpack_require__.r(__webpack_exports__);
 function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == typeof i ? i : i + ""; }
 function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != typeof i) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
-/**
- * Copyright 2017-2023 CNES - CENTRE NATIONAL d'ETUDES SPATIALES
- *
- * This file is part of REGARDS.
- *
- * REGARDS is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * REGARDS is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with REGARDS. If not, see <http://www.gnu.org/licenses/>.
- **/
-
 class IFrameDisplayer extends React.Component {
   render() {
     const {
       source
     } = this.props;
-    return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("iframe", {
+    return /*#__PURE__*/React.createElement("div", {
+      style: {
+        height: '100vh'
+      }
+    }, /*#__PURE__*/React.createElement("iframe", {
+      style: {
+        background: '#FFFFFF',
+        height: '100%',
+        width: '100%'
+      },
       title: "content-displayer",
       src: source
     }));
@@ -244,14 +284,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "ServiceContainer": () => (/* binding */ ServiceContainer),
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _regardsoss_redux__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @regardsoss/redux */ "../../../web_modules/utils/redux/src/Connect.js");
-/* harmony import */ var _regardsoss_shape__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @regardsoss/shape */ "../../../web_modules/data/shape/src/main.js");
-/* harmony import */ var _regardsoss_plugins_api__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @regardsoss/plugins-api */ "../../../web_modules/utils/plugins-api/src/utils/TargetEntitiesResolver.js");
-/* harmony import */ var _regardsoss_authentication_utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @regardsoss/authentication-utils */ "../../../web_modules/utils/authentication-utils/src/AuthenticationClient.js");
-/* harmony import */ var _regardsoss_store_utils__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @regardsoss/store-utils */ "../../../web_modules/utils/store-utils/src/signal/BasicSignalSelectors.js");
-/* harmony import */ var _clientsfiles_main__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../clientsfiles/main */ "./src/clientsfiles/main.js");
-/* harmony import */ var _components_FilePreview__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/FilePreview */ "./src/components/FilePreview.jsx");
-/* harmony import */ var _withFileClient__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./withFileClient */ "./src/containers/withFileClient.jsx");
+/* harmony import */ var _regardsoss_redux__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @regardsoss/redux */ "../../../web_modules/utils/redux/src/Connect.js");
+/* harmony import */ var _regardsoss_shape__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @regardsoss/shape */ "../../../web_modules/data/shape/src/main.js");
+/* harmony import */ var _regardsoss_plugins_api__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @regardsoss/plugins-api */ "../../../web_modules/utils/plugins-api/src/utils/TargetEntitiesResolver.js");
+/* harmony import */ var _regardsoss_authentication_utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @regardsoss/authentication-utils */ "../../../web_modules/utils/authentication-utils/src/AuthenticationClient.js");
+/* harmony import */ var _components_FilePreview__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../components/FilePreview */ "./src/components/FilePreview.jsx");
 /* provided dependency */ var React = __webpack_require__(/*! react */ "../../../node_modules/react/index.js");
 /* provided dependency */ var PropTypes = __webpack_require__(/*! prop-types */ "../../../node_modules/prop-types/index.js");
 function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
@@ -281,11 +318,6 @@ function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = 
 
 
 
-
-
-
-
-
 /**
  * Main squelette plugin container
  * @author nicolas vongsanti
@@ -294,8 +326,9 @@ class ServiceContainer extends React.Component {
   constructor(...args) {
     super(...args);
     _defineProperty(this, "state", {
-      file: null,
-      runtimeObjects: []
+      runtimeObjects: [],
+      reqObject: null,
+      reqObjectLoading: true
     });
   }
   /**
@@ -305,10 +338,7 @@ class ServiceContainer extends React.Component {
    * @return {*} list of component properties extracted from redux state
    */
   static mapStateToProps(state, props) {
-    const {
-      FileClient
-    } = props;
-    const token = _regardsoss_authentication_utils__WEBPACK_IMPORTED_MODULE_3__.default.authenticationSelectors.getAccessToken(state);
+    const token = _regardsoss_authentication_utils__WEBPACK_IMPORTED_MODULE_1__.default.authenticationSelectors.getAccessToken(state);
     return {
       //TODO voir si c'est correct
       //fileClientRes: FileClient.selectors.getResult(state),
@@ -324,13 +354,11 @@ class ServiceContainer extends React.Component {
    */
   static mapDispatchToProps(dispatch, props) {
     const {
-      FileClient,
       target
     } = props;
     return {
-      fetchFile: searchContext => dispatch(FileClient.actions.getDownloadFile(searchContext)),
       // we apply partially the method getReducePromise to ignore dispatch reference at runtime
-      getReducePromise: (reducer, initialValue) => _regardsoss_plugins_api__WEBPACK_IMPORTED_MODULE_4__.TargetEntitiesResolver.getReducePromise(dispatch, target, reducer, initialValue)
+      getReducePromise: (reducer, initialValue) => _regardsoss_plugins_api__WEBPACK_IMPORTED_MODULE_2__.TargetEntitiesResolver.getReducePromise(dispatch, target, reducer, initialValue)
     };
   }
   componentDidMount() {
@@ -339,40 +367,33 @@ class ServiceContainer extends React.Component {
     // in heavy memory load (just demonstrated here).
     const {
       getReducePromise,
-      fetchFile,
       token
     } = this.props;
     getReducePromise((previouslyRetrieved, entity) => [...previouslyRetrieved, entity], []).then(runtimeObjects => {
-      //this.setState({ runtimeObjects });
       let reqParamsObject = {
         AIP_ID: runtimeObjects[0].content.virtualId,
         // TODO formulation à changer car il peut y avoir plusieurs fichiers RAWDATA
         checksum: runtimeObjects[0].content.files.RAWDATA[0].checksum,
         token: token
       };
-      console.log('aipid', reqParamsObject.AIP_ID, ' et checksum', reqParamsObject.checksum);
-      fetchFile(reqParamsObject).then(results => {
-        this.setState({
-          file: results.payload,
-          runtimeObjects: runtimeObjects
-        });
-        console.log('fichier: ', results.payload);
-      }).catch(err => console.error('Could not retrieve get file', err));
+      this.setState({
+        runtimeObjects: runtimeObjects,
+        reqObject: reqParamsObject,
+        reqObjectLoading: false
+      });
     }).catch(err => console.error('Could not retrieve service runtime entities', err));
   }
   render() {
     const {
-      runtimeObjects,
-      file
+      reqObject,
+      reqObjectLoading
     } = this.state;
-    const {
-      token
-    } = this.props;
-    return /*#__PURE__*/React.createElement("div", null, "Hello Service Plugin", runtimeObjects.map((object, index) => /*#__PURE__*/React.createElement("div", {
-      key: index
-    }, /*#__PURE__*/React.createElement(_components_FilePreview__WEBPACK_IMPORTED_MODULE_1__.FilePreview, {
-      file: file
-    }))));
+    if (!reqObjectLoading) {
+      return /*#__PURE__*/React.createElement(_components_FilePreview__WEBPACK_IMPORTED_MODULE_0__.default, {
+        filePathParams: reqObject
+      });
+    }
+    return /*#__PURE__*/React.createElement("div", null, "Hello Service Plugin");
   }
 }
 
@@ -380,23 +401,15 @@ class ServiceContainer extends React.Component {
 _defineProperty(ServiceContainer, "propTypes", {
   // From runtime
   pluginInstanceId: PropTypes.string.isRequired,
-  target: _regardsoss_shape__WEBPACK_IMPORTED_MODULE_5__.AccessShapes.PluginTarget.isRequired,
-  configuration: _regardsoss_shape__WEBPACK_IMPORTED_MODULE_5__.AccessShapes.RuntimeConfiguration.isRequired,
-  // From withFileClient()
-  FileClient: PropTypes.shape({
-    actions: PropTypes.instanceOf(_clientsfiles_main__WEBPACK_IMPORTED_MODULE_0__.DownloadFileClient.SearchDownloadFileActions),
-    selectors: PropTypes.instanceOf(_regardsoss_store_utils__WEBPACK_IMPORTED_MODULE_6__.default)
-  }).isRequired,
+  target: _regardsoss_shape__WEBPACK_IMPORTED_MODULE_3__.AccessShapes.PluginTarget.isRequired,
+  configuration: _regardsoss_shape__WEBPACK_IMPORTED_MODULE_3__.AccessShapes.RuntimeConfiguration.isRequired,
   // From mapDispatchToProps
-  fetchFile: PropTypes.func.isRequired,
   getReducePromise: PropTypes.func.isRequired,
   // partially applied reduce promise, see mapStateToProps and later code demo
   // From mapStateToProps
   token: PropTypes.string
-  //TODO chercher le type de donnée qui est retourné
-  //fileClientRes: ,
 });
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,_withFileClient__WEBPACK_IMPORTED_MODULE_2__.default)((0,_regardsoss_redux__WEBPACK_IMPORTED_MODULE_7__.default)(ServiceContainer.mapStateToProps, ServiceContainer.mapDispatchToProps)(ServiceContainer)));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,_regardsoss_redux__WEBPACK_IMPORTED_MODULE_4__.default)(ServiceContainer.mapStateToProps, ServiceContainer.mapDispatchToProps)(ServiceContainer));
 
 /***/ }),
 
@@ -413,27 +426,19 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _clients_FileClient__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../clients/FileClient */ "./src/clients/FileClient.js");
 /* provided dependency */ var React = __webpack_require__(/*! react */ "../../../node_modules/react/index.js");
-/* provided dependency */ var PropTypes = __webpack_require__(/*! prop-types */ "../../../node_modules/prop-types/index.js");
 function _extends() { return _extends = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } return n; }, _extends.apply(null, arguments); }
-function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
-function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == typeof i ? i : i + ""; }
-function _toPrimitive(t, r) { if ("object" != typeof t || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != typeof i) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Component => {
-  var _WithClient;
-  return _WithClient = class WithClient extends React.Component {
-    render() {
-      const {
-        pluginInstanceId
-      } = this.props;
-      const FileClient = (0,_clients_FileClient__WEBPACK_IMPORTED_MODULE_0__.getFileClient)(pluginInstanceId);
-      return /*#__PURE__*/React.createElement(Component, _extends({}, this.props, {
-        FileClient: FileClient
-      }));
-    }
-  }, _defineProperty(_WithClient, "propTypes", {
-    pluginInstanceId: PropTypes.string.isRequired
-  }), _WithClient;
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Component => class WithClient extends React.Component {
+  render() {
+    const {
+      pluginInstanceId
+    } = this.props;
+    console.log('plugininstanceid => ', pluginInstanceId);
+    const FileClient = (0,_clients_FileClient__WEBPACK_IMPORTED_MODULE_0__.getFileClient)(pluginInstanceId);
+    return /*#__PURE__*/React.createElement(Component, _extends({}, this.props, {
+      FileClient: FileClient
+    }));
+  }
 });
 
 /***/ }),
