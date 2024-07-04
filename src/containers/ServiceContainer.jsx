@@ -36,8 +36,6 @@ export class ServiceContainer extends React.Component {
   static mapStateToProps(state, props) {
     const token = AuthenticationClient.authenticationSelectors.getAccessToken(state);
     return {
-      //TODO voir si c'est correct
-      //fileClientRes: FileClient.selectors.getResult(state),
       token: token,
     }
   }
@@ -51,7 +49,7 @@ export class ServiceContainer extends React.Component {
   static mapDispatchToProps(dispatch, props) {
     const { target } = props;
     return {
-     // we apply partially the method getReducePromise to ignore dispatch reference at runtime
+      // we apply partially the method getReducePromise to ignore dispatch reference at runtime
       getReducePromise: (reducer, initialValue) => TargetEntitiesResolver.getReducePromise(dispatch, target, reducer, initialValue),
     }
   }
@@ -64,45 +62,73 @@ export class ServiceContainer extends React.Component {
     // From mapDispatchToProps
     getReducePromise: PropTypes.func.isRequired, // partially applied reduce promise, see mapStateToProps and later code demo
     // From mapStateToProps
-    token: PropTypes.string,
+    token: PropTypes.string.isRequired,
 
   }
 
   state = {
-    runtimeObjects: [],
     reqObject: null,
     reqObjectLoading: true,
+    checksumfilenames: [],
+    aipID: null,
+  }
+
+  buildChecksumFilenamesArray(rawDataFiles) {
+    let chsumflnames = [];
+    rawDataFiles.forEach(({ checksum, filename }) => {
+      chsumflnames.push({ checksum, filename });
+    });
+    return chsumflnames;
   }
 
   componentDidMount() {
-    // Start fetching and converting entities: append each new entity in array
-    // Note: It isn't a good pratice to keep complete entities in memory as it result
-    // in heavy memory load (just demonstrated here).
-    const { getReducePromise, token } = this.props;
+    const { getReducePromise } = this.props;
     getReducePromise((previouslyRetrieved, entity) => [...previouslyRetrieved, entity], [])
       .then(runtimeObjects => {
-        let reqParamsObject = {
-          AIP_ID: runtimeObjects[0].content.virtualId,
-          // TODO formulation à changer car il peut y avoir plusieurs fichiers RAWDATA
-          checksum: runtimeObjects[0].content.files.RAWDATA[0].checksum,
-          token: token
-        };
-        this.setState({ runtimeObjects: runtimeObjects, reqObject: reqParamsObject, reqObjectLoading: false });
+        let chsumflnames = this.buildChecksumFilenamesArray(runtimeObjects[0].content.files.RAWDATA);
+        let idaip = runtimeObjects[0].content.virtualId;
+        this.setState({ checksumfilenames: chsumflnames, aipID: idaip });
       })
       .catch(err => console.error('Could not retrieve service runtime entities', err));
   }
 
+  buildReqObject(filechecksum) {
+    const { aipID } = this.state;
+    const { token } = this.props;
+    let reqParamsObject = {
+      AIP_ID: aipID,
+      checksum: filechecksum,
+      token: token
+    };
+    this.setState({ reqObject: reqParamsObject, reqObjectLoading: false });
+  }
 
   render() {
-    const { reqObject, reqObjectLoading } = this.state;
+    const { reqObject, reqObjectLoading, checksumfilenames } = this.state;
 
     if (!reqObjectLoading) {
       return (
-        <FilePreview filePathParams={reqObject} />
+        <div>
+          <button onClick={() => this.setState({ reqObjectLoading: true })}>RETOUR</button>
+          <FilePreview filePathParams={reqObject} />
+        </div>
       )
     }
     return (
-      <div>Hello Service Plugin</div>
+      <div>
+        <div>Liste des fichiers :</div>
+        <ul>
+          {checksumfilenames.map((object, index) => (
+            <li
+              key={index}
+              value={object.checksum}
+              onClick={() => this.buildReqObject(object.checksum)}
+            >
+              {object.filename}
+            </li>
+          ))}
+        </ul>
+      </div>
     )
   }
 }

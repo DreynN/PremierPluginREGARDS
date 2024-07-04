@@ -37,7 +37,7 @@ export class FilePreview extends React.Component {
             this.setState({ file: results.payload, fileLoading: false });
             console.log('fichier: ', results.payload);
         })
-        .catch(err => console.error('Could not retrieve get file', err));
+            .catch(err => console.error('Could not retrieve get file', err));
     }
 
     render() {
