@@ -24,6 +24,19 @@
  */
 export default function getStyles(theme) {
   return {
-    // put here specific styles (updated on theme change)
-  }
+    table: {
+      borderCollapse: "collapse",
+      width: "100%",
+    },
+    th: {
+      backgroundColor: "lightblue",
+      color: "white",
+      padding: "10px",
+      textAlign: "left",
+    },
+    td: {
+      border: "1px solid",
+      padding: "10px",
+    },
+  };
 }

@@ -71,6 +71,7 @@ export class ServiceContainer extends React.Component {
     reqObjectLoading: true,
     checksumfilenames: [],
     aipID: null,
+    chosenfile: null,
   }
 
   buildChecksumFilenamesArray(rawDataFiles) {
@@ -92,7 +93,7 @@ export class ServiceContainer extends React.Component {
       .catch(err => console.error('Could not retrieve service runtime entities', err));
   }
 
-  buildReqObject(filechecksum) {
+  buildReqObject(filechecksum, filename) {
     const { aipID } = this.state;
     const { token } = this.props;
     let reqParamsObject = {
@@ -100,17 +101,17 @@ export class ServiceContainer extends React.Component {
       checksum: filechecksum,
       token: token
     };
-    this.setState({ reqObject: reqParamsObject, reqObjectLoading: false });
+    this.setState({ reqObject: reqParamsObject, reqObjectLoading: false, chosenfile: filename });
   }
 
   render() {
-    const { reqObject, reqObjectLoading, checksumfilenames } = this.state;
+    const { reqObject, reqObjectLoading, checksumfilenames, chosenfile } = this.state;
 
     if (!reqObjectLoading) {
       return (
         <div>
           <button onClick={() => this.setState({ reqObjectLoading: true })}>RETOUR</button>
-          <FilePreview filePathParams={reqObject} />
+          <FilePreview filePathParams={reqObject} filename={chosenfile} />
         </div>
       )
     }
@@ -122,7 +123,7 @@ export class ServiceContainer extends React.Component {
             <li
               key={index}
               value={object.checksum}
-              onClick={() => this.buildReqObject(object.checksum)}
+              onClick={() => this.buildReqObject(object.checksum, object.filename)}
             >
               {object.filename}
             </li>
