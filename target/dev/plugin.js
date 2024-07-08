@@ -227,6 +227,8 @@ class FilePreview extends React.Component {
       content
     } = file;
     _modules_papaparse_min_js__WEBPACK_IMPORTED_MODULE_3___default().parse(content, {
+      header: true,
+      encoding: "ISO-8859-1",
       complete: results => {
         console.log("Finished:", results.data);
         const rowsArray = [];

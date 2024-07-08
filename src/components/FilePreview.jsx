@@ -53,7 +53,7 @@ export class FilePreview extends React.Component {
             console.log('fichier: ', results.payload);
         })
             .catch(err => console.error('Could not retrieve get file', err));
-        
+
     }
 
     //TODO a placer
@@ -72,6 +72,8 @@ export class FilePreview extends React.Component {
         const { file } = this.state;
         const { content } = file
         Papa.parse(content, {
+            header: true,
+            encoding: "ISO-8859-1",
             complete: (results) => {
                 console.log("Finished:", results.data);
                 const rowsArray = [];
